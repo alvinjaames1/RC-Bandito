@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RC Bandito — Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --red: #e63946;
+    --dark: #0a0a0a;
+    --panel: #111111;
+    --panel2: #161616;
+    --border: #2a2a2a;
+    --text: #f0f0f0;
+    --muted: #555;
+    --green: #2a9d2a;
+    --yellow: #e9c46a;
+  }
+
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(230,57,70,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(230,57,70,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--panel);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 0.1em; }
+  .logo span { color: var(--red); }
+  .admin-badge {
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--red);
+    border: 1px solid var(--red);
+    padding: 2px 8px;
+    margin-left: 12px;
+  }
+
+  .header-right { display: flex; gap: 1rem; align-items: center; }
+
+  .nav-link {
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 4px 10px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    background: none;
+    font-family: 'IBM Plex Mono', monospace;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .nav-link:hover { color: var(--text); border-color: var(--muted); }
+
+  .logout-btn {
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 4px 12px;
+    cursor: pointer;
+    background: none;
+    font-family: 'IBM Plex Mono', monospace;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .logout-btn:hover { color: var(--red); border-color: var(--red); }
+
+  main {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* STAT CARDS */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+  }
+
+  .stat-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 1.25rem;
+  }
+
+  .stat-card .label {
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-card .value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.2rem;
+    line-height: 1;
+    color: var(--text);
+  }
+
+  .stat-card .value.red { color: var(--red); }
+  .stat-card .value.green { color: var(--green); }
+
+  /* SECTION */
+  .section-panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 1.25rem;
+  }
+
+  .section-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-label::after { content:''; flex:1; height:1px; background:var(--border); }
+
+  /* TABLE */
+  table { width: 100%; border-collapse: collapse; font-size: 0.72rem; }
+  th {
+    text-align: left;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    font-weight: 400;
+  }
+  td { padding: 0.6rem 0.75rem; border-bottom: 1px solid #1a1a1a; vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--panel2); }
+
+  .badge {
+    display: inline-block;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+  }
+  .badge.admin { background: rgba(230,57,70,0.15); color: var(--red); border: 1px solid rgba(230,57,70,0.3); }
+  .badge.operator { background: rgba(42,157,42,0.1); color: var(--green); border: 1px solid rgba(42,157,42,0.3); }
+  .badge.locked { background: rgba(230,57,70,0.15); color: var(--red); border: 1px solid rgba(230,57,70,0.3); }
+  .badge.ok { background: rgba(42,157,42,0.1); color: var(--green); border: 1px solid rgba(42,157,42,0.3); }
+
+  .action-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    padding: 3px 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .action-btn:hover { border-color: var(--green); color: var(--green); }
+
+  /* LOG */
+  .log-entry { font-size: 0.68rem; padding: 0.4rem 0; border-bottom: 1px solid #1a1a1a; line-height: 1.6; }
+  .log-entry:last-child { border-bottom: none; }
+  .log-entry .time { color: var(--muted); margin-right: 8px; }
+  .log-entry .tag { margin-right: 8px; }
+  .tag-login { color: var(--green); }
+  .tag-fail { color: var(--red); }
+  .tag-cmd { color: var(--yellow); }
+  .tag-admin { color: #a8dadc; }
+
+  .filter-row { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; }
+  .filter-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .filter-btn.active, .filter-btn:hover { border-color: var(--red); color: var(--red); }
+
+  .loading { color: var(--muted); font-size: 0.7rem; padding: 1rem 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <div style="display:flex;align-items:center;">
+    <div class="logo">RC <span>Bandito</span></div>
+    <span class="admin-badge">Admin</span>
+  </div>
+  <div class="header-right">
+    <a href="/control/dashboard" class="nav-link">Control Panel</a>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+</header>
+
+<main>
+
+  <!-- STAT CARDS -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="label">Total Users</div>
+      <div class="value" id="statUsers">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Locked Accounts</div>
+      <div class="value red" id="statLocked">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Total Log Events</div>
+      <div class="value" id="statLogs">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Failed Logins</div>
+      <div class="value red" id="statFailed">—</div>
+    </div>
+  </div>
+
+  <!-- USERS TABLE -->
+  <div class="section-panel">
+    <div class="section-label">User Management</div>
+    <div id="usersContainer" class="loading">Loading users...</div>
+  </div>
+
+  <!-- AUDIT LOG -->
+  <div class="section-panel">
+    <div class="section-label">Audit Log</div>
+    <div class="filter-row">
+      <button class="filter-btn active" onclick="filterLogs('all', this)">All</button>
+      <button class="filter-btn" onclick="filterLogs('LOGIN_SUCCESS', this)">Logins</button>
+      <button class="filter-btn" onclick="filterLogs('LOGIN_FAIL', this)">Failures</button>
+      <button class="filter-btn" onclick="filterLogs('COMMAND', this)">Commands</button>
+      <button class="filter-btn" onclick="filterLogs('ACCOUNT_LOCKED', this)">Lockouts</button>
+    </div>
+    <div id="logsContainer" class="loading">Loading logs...</div>
+  </div>
+
+</main>
+
+<script>
+  let allLogs = [];
+
+  async function loadUsers() {
+    try {
+      const res = await fetch('/admin/users');
+      if (!res.ok) { document.getElementById('usersContainer').textContent = 'Access denied.'; return; }
+      const users = await res.json();
+
+      const locked = users.filter(u => u.locked_until).length;
+      document.getElementById('statUsers').textContent = users.length;
+      document.getElementById('statLocked').textContent = locked;
+
+      const table = `
+        <table>
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Failed Attempts</th>
+              <th>Last Login</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${users.map(u => `
+              <tr>
+                <td>${u.username}</td>
+                <td><span class="badge ${u.role}">${u.role}</span></td>
+                <td><span class="badge ${u.locked_until ? 'locked' : 'ok'}">${u.locked_until ? 'Locked' : 'Active'}</span></td>
+                <td>${u.failed_attempts}</td>
+                <td>${u.last_login ? u.last_login.replace('T',' ').slice(0,19) : '—'}</td>
+                <td>
+                  ${u.locked_until ? `<button class="action-btn" onclick="unlockUser(${u.id})">Unlock</button>` : '—'}
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>`;
+      document.getElementById('usersContainer').innerHTML = table;
+    } catch (e) {
+      document.getElementById('usersContainer').textContent = 'Failed to load users.';
+    }
+  }
+
+  async function loadLogs() {
+    try {
+      const res = await fetch('/admin/logs?limit=100');
+      if (!res.ok) { document.getElementById('logsContainer').textContent = 'Access denied.'; return; }
+      allLogs = await res.json();
+
+      const failed = allLogs.filter(l => l.event_type === 'LOGIN_FAIL' || l.event_type === 'ACCOUNT_LOCKED').length;
+      document.getElementById('statLogs').textContent = allLogs.length;
+      document.getElementById('statFailed').textContent = failed;
+
+      renderLogs(allLogs);
+    } catch (e) {
+      document.getElementById('logsContainer').textContent = 'Failed to load logs.';
+    }
+  }
+
+  function renderLogs(logs) {
+    if (!logs.length) {
+      document.getElementById('logsContainer').textContent = 'No log entries found.';
+      return;
+    }
+    const tagClass = t => {
+      if (t === 'LOGIN_SUCCESS') return 'tag-login';
+      if (t.includes('FAIL') || t.includes('LOCK') || t.includes('BLOCK')) return 'tag-fail';
+      if (t === 'COMMAND') return 'tag-cmd';
+      return 'tag-admin';
+    };
+
+    document.getElementById('logsContainer').innerHTML = logs.map(log => `
+      <div class="log-entry">
+        <span class="time">${log.timestamp.replace('T',' ').slice(0,19)}</span>
+        <span class="tag ${tagClass(log.event_type)}">[${log.event_type}]</span>
+        <span>${log.username}</span> — ${log.description}
+        <span style="color:var(--muted);font-size:0.6rem;"> · ${log.ip_address || '—'}</span>
+      </div>
+    `).join('');
+  }
+
+  function filterLogs(type, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const filtered = type === 'all' ? allLogs : allLogs.filter(l => l.event_type === type);
+    renderLogs(filtered);
+  }
+
+  async function unlockUser(userId) {
+    const res = await fetch(`/admin/users/${userId}/unlock`, { method: 'POST' });
+    if (res.ok) loadUsers();
+  }
+
+  async function logout() {
+    await fetch('/auth/logout', { method: 'POST' });
+    window.location.href = '/auth/login';
+  }
+
+  loadUsers();
+  loadLogs();
+  setInterval(() => { loadUsers(); loadLogs(); }, 15000);
+</script>
+</body>
+</html>
