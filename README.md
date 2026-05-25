@@ -6,7 +6,7 @@ A secure, camera-equipped RC car controlled over a local network — built to de
 - Jorge Icabalceta Aust (100247561)
 - Alvin Tay (100408097)
 - Nihkil Sood (100409908)
-- Raycel Liang
+- Rayzel Liang
 
 ---
 
