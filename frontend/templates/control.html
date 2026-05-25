@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RC Bandito — Control Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --red: #e63946;
+    --dark: #0a0a0a;
+    --panel: #111111;
+    --panel2: #161616;
+    --border: #2a2a2a;
+    --text: #f0f0f0;
+    --muted: #555;
+    --green: #2a9d2a;
+  }
+
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(230,57,70,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(230,57,70,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+
+  /* TOP BAR */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--panel);
+    position: relative;
+    z-index: 10;
+  }
+
+  .logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 0.1em; }
+  .logo span { color: var(--red); }
+
+  .header-right { display: flex; align-items: center; gap: 1.5rem; }
+
+  .status-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+  }
+
+  .dot { width: 6px; height: 6px; border-radius: 50%; }
+  .dot.green { background: var(--green); animation: pulse 2s infinite; }
+  .dot.red { background: var(--red); }
+
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .logout-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .logout-btn:hover { border-color: var(--red); color: var(--red); }
+
+  /* MAIN LAYOUT */
+  main {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* LEFT COLUMN */
+  .left { display: flex; flex-direction: column; gap: 1rem; }
+
+  /* VIDEO FEED */
+  .video-panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    aspect-ratio: 16/9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .video-panel img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .video-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(240,240,240,0.6);
+    background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent);
+  }
+
+  .rec { color: var(--red); display: flex; align-items: center; gap: 4px; }
+  .rec .dot { background: var(--red); animation: pulse 1s infinite; }
+
+  /* CONTROLS */
+  .controls-panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 1.25rem;
+  }
+
+  .section-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-label::after { content:''; flex:1; height:1px; background:var(--border); }
+
+  /* D-PAD */
+  .dpad {
+    display: grid;
+    grid-template-columns: repeat(3, 64px);
+    grid-template-rows: repeat(3, 64px);
+    gap: 6px;
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+
+  .dpad-btn {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.1s, border-color 0.1s, transform 0.1s;
+    user-select: none;
+  }
+
+  .dpad-btn:hover { border-color: var(--red); background: rgba(230,57,70,0.1); }
+  .dpad-btn.active, .dpad-btn:active {
+    background: var(--red);
+    border-color: var(--red);
+    transform: scale(0.95);
+  }
+
+  .dpad-btn.stop-btn {
+    background: rgba(230,57,70,0.15);
+    border-color: var(--red);
+    color: var(--red);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+  }
+
+  .dpad-btn.stop-btn:hover { background: var(--red); color: #fff; }
+  .dpad-btn.empty { visibility: hidden; }
+
+  /* SPEED SLIDER */
+  .speed-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 0.5rem;
+  }
+
+  .speed-label { font-size: 0.65rem; color: var(--muted); letter-spacing: 0.1em; white-space: nowrap; }
+
+  input[type=range] {
+    flex: 1;
+    appearance: none;
+    height: 3px;
+    background: var(--border);
+    outline: none;
+    cursor: pointer;
+  }
+
+  input[type=range]::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--red);
+    cursor: pointer;
+  }
+
+  .speed-val {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--red);
+    min-width: 36px;
+    text-align: right;
+  }
+
+  /* EMERGENCY STOP */
+  .estop-btn {
+    width: 100%;
+    background: var(--red);
+    border: none;
+    color: #fff;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    letter-spacing: 0.2em;
+    padding: 0.7rem;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .estop-btn:hover { background: #c1121f; }
+  .estop-btn:active { transform: scale(0.98); }
+
+  /* RIGHT COLUMN */
+  .right { display: flex; flex-direction: column; gap: 1rem; }
+
+  .info-panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 1.25rem;
+  }
+
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.72rem;
+  }
+
+  .stat-row:last-child { border-bottom: none; }
+  .stat-key { color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; font-size: 0.62rem; }
+  .stat-val { color: var(--text); font-weight: 500; }
+  .stat-val.ok { color: var(--green); }
+  .stat-val.warn { color: var(--red); }
+
+  /* LOG */
+  .log-panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 1.25rem;
+    flex: 1;
+  }
+
+  .log-list {
+    list-style: none;
+    font-size: 0.65rem;
+    color: var(--muted);
+    line-height: 1.8;
+    max-height: 220px;
+    overflow-y: auto;
+  }
+
+  .log-list li { border-bottom: 1px solid #1a1a1a; padding: 3px 0; }
+  .log-list li span { color: var(--red); }
+
+  /* KEYBOARD HINT */
+  .key-hint {
+    font-size: 0.6rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-align: center;
+    margin-top: 0.5rem;
+  }
+
+  .key { border: 1px solid var(--border); padding: 1px 5px; font-size: 0.6rem; }
+
+  @media (max-width: 700px) {
+    main { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">RC <span>Bandito</span></div>
+  <div class="header-right">
+    <div class="status-pill"><div class="dot green"></div> Connected</div>
+    <div class="status-pill" id="userPill"><div class="dot"></div> operator</div>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+</header>
+
+<main>
+  <div class="left">
+
+    <!-- VIDEO -->
+    <div class="video-panel">
+      <img id="videoFeed" src="/stream/video_feed" alt="Live feed" onerror="this.src='/static/img/no-signal.png'" />
+      <div class="video-overlay">
+        <div class="rec"><div class="dot"></div> LIVE</div>
+        <div id="timestamp">--:--:--</div>
+      </div>
+    </div>
+
+    <!-- CONTROLS -->
+    <div class="controls-panel">
+      <div class="section-label">Movement Controls</div>
+
+      <div class="dpad">
+        <div class="dpad-btn empty"></div>
+        <button class="dpad-btn" id="btn-forward" data-cmd="forward" title="Forward (W / ↑)">▲</button>
+        <div class="dpad-btn empty"></div>
+
+        <button class="dpad-btn" id="btn-left" data-cmd="left" title="Left (A / ←)">◀</button>
+        <button class="dpad-btn stop-btn" id="btn-stop" onclick="emergencyStop()">STOP</button>
+        <button class="dpad-btn" id="btn-right" data-cmd="right" title="Right (D / →)">▶</button>
+
+        <div class="dpad-btn empty"></div>
+        <button class="dpad-btn" id="btn-backward" data-cmd="backward" title="Backward (S / ↓)">▼</button>
+        <div class="dpad-btn empty"></div>
+      </div>
+
+      <div class="speed-row">
+        <span class="speed-label">Speed</span>
+        <input type="range" id="speedSlider" min="0" max="100" value="50" step="1" oninput="updateSpeed(this.value)" />
+        <span class="speed-val" id="speedVal">50%</span>
+      </div>
+
+      <div class="key-hint">
+        <span class="key">W</span> <span class="key">A</span> <span class="key">S</span> <span class="key">D</span>
+        &nbsp;or&nbsp;
+        <span class="key">↑</span> <span class="key">←</span> <span class="key">↓</span> <span class="key">→</span>
+        &nbsp;to drive &nbsp;|&nbsp; <span class="key">Space</span> to stop
+      </div>
+    </div>
+
+  </div>
+
+  <div class="right">
+
+    <!-- TELEMETRY -->
+    <div class="info-panel">
+      <div class="section-label">Telemetry</div>
+      <div class="stat-row">
+        <span class="stat-key">Connection</span>
+        <span class="stat-val ok" id="connStatus">Active</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-key">Current Command</span>
+        <span class="stat-val" id="currentCmd">—</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-key">Speed</span>
+        <span class="stat-val" id="currentSpeed">50%</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-key">Watchdog</span>
+        <span class="stat-val ok" id="watchdogStatus">OK</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-key">Commands Sent</span>
+        <span class="stat-val" id="cmdCount">0</span>
+      </div>
+    </div>
+
+    <!-- ACTIVITY LOG -->
+    <div class="log-panel">
+      <div class="section-label">Activity Log</div>
+      <ul class="log-list" id="logList">
+        <li><span>[INFO]</span> System ready</li>
+      </ul>
+    </div>
+
+  </div>
+</main>
+
+<script>
+  let speed = 50;
+  let cmdCount = 0;
+  let activeKey = null;
+  let watchdogTimer = null;
+
+  // Timestamp
+  setInterval(() => {
+    document.getElementById('timestamp').textContent = new Date().toTimeString().slice(0,8);
+  }, 1000);
+
+  function updateSpeed(val) {
+    speed = parseInt(val);
+    document.getElementById('speedVal').textContent = speed + '%';
+    document.getElementById('currentSpeed').textContent = speed + '%';
+  }
+
+  async function sendCommand(cmd) {
+    try {
+      const res = await fetch('/control/command', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ command: cmd, speed: speed })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        cmdCount++;
+        document.getElementById('cmdCount').textContent = cmdCount;
+        document.getElementById('currentCmd').textContent = cmd.toUpperCase();
+        addLog('info', `CMD: ${cmd} @ ${speed}%`);
+        resetWatchdog();
+      } else {
+        addLog('warn', data.error || 'Command rejected');
+      }
+    } catch (e) {
+      addLog('warn', 'Connection lost');
+      document.getElementById('connStatus').textContent = 'Lost';
+      document.getElementById('connStatus').className = 'stat-val warn';
+    }
+  }
+
+  async function emergencyStop() {
+    try {
+      await fetch('/control/emergency_stop', { method: 'POST' });
+      document.getElementById('currentCmd').textContent = 'STOPPED';
+      addLog('warn', 'EMERGENCY STOP');
+    } catch (e) {
+      addLog('warn', 'Stop failed — check connection');
+    }
+  }
+
+  function resetWatchdog() {
+    clearTimeout(watchdogTimer);
+    document.getElementById('watchdogStatus').textContent = 'OK';
+    document.getElementById('watchdogStatus').className = 'stat-val ok';
+    watchdogTimer = setTimeout(() => {
+      document.getElementById('watchdogStatus').textContent = 'TIMEOUT';
+      document.getElementById('watchdogStatus').className = 'stat-val warn';
+      addLog('warn', 'Watchdog timeout — auto stop');
+    }, 3000);
+  }
+
+  function addLog(type, msg) {
+    const list = document.getElementById('logList');
+    const li = document.createElement('li');
+    const tag = type === 'warn' ? 'WARN' : 'INFO';
+    const time = new Date().toTimeString().slice(0,8);
+    li.innerHTML = `<span>[${tag}]</span> ${time} ${msg}`;
+    list.prepend(li);
+    if (list.children.length > 30) list.removeChild(list.lastChild);
+  }
+
+  // Button click events
+  document.querySelectorAll('.dpad-btn[data-cmd]').forEach(btn => {
+    btn.addEventListener('mousedown', () => {
+      btn.classList.add('active');
+      sendCommand(btn.dataset.cmd);
+    });
+    btn.addEventListener('mouseup', () => {
+      btn.classList.remove('active');
+      sendCommand('stop');
+    });
+    btn.addEventListener('mouseleave', () => {
+      if (btn.classList.contains('active')) {
+        btn.classList.remove('active');
+        sendCommand('stop');
+      }
+    });
+  });
+
+  // Keyboard controls
+  const keyMap = {
+    'ArrowUp': 'forward', 'w': 'forward', 'W': 'forward',
+    'ArrowDown': 'backward', 's': 'backward', 'S': 'backward',
+    'ArrowLeft': 'left', 'a': 'left', 'A': 'left',
+    'ArrowRight': 'right', 'd': 'right', 'D': 'right',
+    ' ': 'stop'
+  };
+
+  const cmdToBtnId = {
+    'forward': 'btn-forward', 'backward': 'btn-backward',
+    'left': 'btn-left', 'right': 'btn-right'
+  };
+
+  document.addEventListener('keydown', e => {
+    if (e.key in keyMap && e.key !== activeKey) {
+      e.preventDefault();
+      activeKey = e.key;
+      const cmd = keyMap[e.key];
+      const btnId = cmdToBtnId[cmd];
+      if (btnId) document.getElementById(btnId)?.classList.add('active');
+      sendCommand(cmd);
+    }
+  });
+
+  document.addEventListener('keyup', e => {
+    if (e.key in keyMap) {
+      activeKey = null;
+      const cmd = keyMap[e.key];
+      const btnId = cmdToBtnId[cmd];
+      if (btnId) document.getElementById(btnId)?.classList.remove('active');
+      if (cmd !== 'stop') sendCommand('stop');
+    }
+  });
+
+  async function logout() {
+    await fetch('/auth/logout', { method: 'POST' });
+    window.location.href = '/auth/login';
+  }
+</script>
+</body>
+</html>
