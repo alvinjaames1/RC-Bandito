@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RC Bandito — Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --red: #e63946;
+    --dark: #0a0a0a;
+    --panel: #111111;
+    --border: #2a2a2a;
+    --text: #f0f0f0;
+    --muted: #666;
+    --accent: #e63946;
+  }
+
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(230,57,70,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(230,57,70,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 420px;
+    padding: 2rem;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3.5rem;
+    letter-spacing: 0.05em;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: 0.25rem;
+  }
+
+  .logo span { color: var(--red); }
+
+  .tagline {
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 2.5rem;
+  }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 2rem;
+  }
+
+  .panel-header {
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .panel-header::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .field {
+    margin-bottom: 1.25rem;
+  }
+
+  label {
+    display: block;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+
+  input {
+    width: 100%;
+    background: var(--dark);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.9rem;
+    padding: 0.75rem 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input:focus {
+    border-color: var(--red);
+  }
+
+  input::placeholder { color: #333; }
+
+  .btn {
+    width: 100%;
+    background: var(--red);
+    color: #fff;
+    border: none;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 0.15em;
+    padding: 0.85rem;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: background 0.2s, transform 0.1s;
+  }
+
+  .btn:hover { background: #c1121f; }
+  .btn:active { transform: scale(0.98); }
+
+  .error-msg {
+    background: rgba(230,57,70,0.1);
+    border: 1px solid rgba(230,57,70,0.3);
+    color: var(--red);
+    font-size: 0.75rem;
+    padding: 0.6rem 0.8rem;
+    margin-bottom: 1rem;
+    display: none;
+    letter-spacing: 0.05em;
+  }
+
+  .status-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 1.5rem;
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #2a9d2a;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="logo">RC <span>Bandito</span></div>
+  <p class="tagline">Secure Control Interface &nbsp;·&nbsp; v1.0</p>
+
+  <div class="panel">
+    <div class="panel-header">Authentication Required</div>
+
+    <div class="error-msg" id="errorMsg"></div>
+
+    <div class="field">
+      <label>Username</label>
+      <input type="text" id="username" placeholder="enter username" autocomplete="off" />
+    </div>
+
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="password" placeholder="••••••••" />
+    </div>
+
+    <button class="btn" onclick="handleLogin()">Access System</button>
+  </div>
+
+  <div class="status-bar">
+    <div class="dot"></div>
+    <span>Local network &nbsp;·&nbsp; TLS secured &nbsp;·&nbsp; Monitoring active</span>
+  </div>
+</div>
+
+<script>
+  async function handleLogin() {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+    const errorMsg = document.getElementById('errorMsg');
+
+    errorMsg.style.display = 'none';
+
+    if (!username || !password) {
+      showError('Username and password are required.');
+      return;
+    }
+
+    try {
+      const res = await fetch('/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        window.location.href = data.role === 'admin' ? '/admin/dashboard' : '/control/dashboard';
+      } else {
+        showError(data.error || 'Login failed.');
+      }
+    } catch (e) {
+      showError('Connection error. Is the server running?');
+    }
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('errorMsg');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') handleLogin();
+  });
+</script>
+</body>
+</html>
