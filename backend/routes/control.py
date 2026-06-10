@@ -3,7 +3,7 @@ RC Bandito - Control Routes
 Command validation, rate limiting, and RC car movement dispatch
 """
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, render_template
 from flask_login import login_required, current_user
 from models.models import db, AuditLog
 from extensions import limiter
@@ -12,6 +12,12 @@ import time
 
 control_bp = Blueprint("control", __name__)
 logger = logging.getLogger(__name__)
+
+
+@control_bp.route("/dashboard")
+@login_required
+def dashboard():
+    return render_template("control.html")
 
 VALID_COMMANDS = {"forward", "backward", "left", "right", "stop"}
 last_command_time = {}
