@@ -15,7 +15,7 @@
     --border: #2a2a2a;
     --text: #f0f0f0;
     --muted: #666;
-    --accent: #e63946;
+    --green: #2a9d2a;
   }
 
   body {
@@ -26,10 +26,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
   }
 
-  /* Grid background */
   body::before {
     content: '';
     position: fixed;
@@ -57,7 +55,6 @@
     font-family: 'Bebas Neue', sans-serif;
     font-size: 3.5rem;
     letter-spacing: 0.05em;
-    color: var(--text);
     line-height: 1;
     margin-bottom: 0.25rem;
   }
@@ -89,16 +86,9 @@
     gap: 8px;
   }
 
-  .panel-header::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
+  .panel-header::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-  .field {
-    margin-bottom: 1.25rem;
-  }
+  .field { margin-bottom: 1.25rem; }
 
   label {
     display: block;
@@ -121,10 +111,7 @@
     transition: border-color 0.2s;
   }
 
-  input:focus {
-    border-color: var(--red);
-  }
-
+  input:focus { border-color: var(--red); }
   input::placeholder { color: #333; }
 
   .btn {
@@ -144,16 +131,40 @@
   .btn:hover { background: #c1121f; }
   .btn:active { transform: scale(0.98); }
 
-  .error-msg {
-    background: rgba(230,57,70,0.1);
-    border: 1px solid rgba(230,57,70,0.3);
-    color: var(--red);
+  .msg {
     font-size: 0.75rem;
     padding: 0.6rem 0.8rem;
     margin-bottom: 1rem;
     display: none;
     letter-spacing: 0.05em;
   }
+
+  .msg.error {
+    background: rgba(230,57,70,0.1);
+    border: 1px solid rgba(230,57,70,0.3);
+    color: var(--red);
+  }
+
+  .msg.success {
+    background: rgba(42,157,42,0.1);
+    border: 1px solid rgba(42,157,42,0.3);
+    color: var(--green);
+  }
+
+  .switch-link {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  .switch-link a {
+    color: var(--red);
+    text-decoration: none;
+  }
+
+  .switch-link a:hover { text-decoration: underline; }
 
   .status-bar {
     display: flex;
@@ -166,17 +177,13 @@
   }
 
   .dot {
-    width: 6px;
-    height: 6px;
+    width: 6px; height: 6px;
     border-radius: 50%;
-    background: #2a9d2a;
+    background: var(--green);
     animation: pulse 2s infinite;
   }
 
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
-  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 </style>
 </head>
 <body>
@@ -186,21 +193,26 @@
   <p class="tagline">Secure Control Interface &nbsp;·&nbsp; v1.0</p>
 
   <div class="panel">
-    <div class="panel-header">Authentication Required</div>
+    <div class="panel-header">Operator Login</div>
 
-    <div class="error-msg" id="errorMsg"></div>
+    <div class="msg error" id="errorMsg"></div>
+    <div class="msg success" id="successMsg"></div>
 
     <div class="field">
-      <label>Username</label>
-      <input type="text" id="username" placeholder="enter username" autocomplete="off" />
+      <label for="username">Username</label>
+      <input type="text" id="username" placeholder="enter username" autocomplete="username" />
     </div>
 
     <div class="field">
-      <label>Password</label>
-      <input type="password" id="password" placeholder="••••••••" />
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" />
     </div>
 
     <button class="btn" onclick="handleLogin()">Access System</button>
+
+    <div class="switch-link">
+      No account? <a href="register.html">Create one →</a>
+    </div>
   </div>
 
   <div class="status-bar">
@@ -213,9 +225,8 @@
   async function handleLogin() {
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value;
-    const errorMsg = document.getElementById('errorMsg');
 
-    errorMsg.style.display = 'none';
+    hideMsgs();
 
     if (!username || !password) {
       showError('Username and password are required.');
@@ -232,7 +243,10 @@
       const data = await res.json();
 
       if (res.ok) {
-        window.location.href = data.role === 'admin' ? '/admin/dashboard' : '/control/dashboard';
+        showSuccess('Login successful. Redirecting...');
+        setTimeout(() => {
+          window.location.href = data.role === 'admin' ? '/admin/dashboard' : '/control/dashboard';
+        }, 600);
       } else {
         showError(data.error || 'Login failed.');
       }
@@ -241,8 +255,19 @@
     }
   }
 
+  function hideMsgs() {
+    document.getElementById('errorMsg').style.display = 'none';
+    document.getElementById('successMsg').style.display = 'none';
+  }
+
   function showError(msg) {
     const el = document.getElementById('errorMsg');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  function showSuccess(msg) {
+    const el = document.getElementById('successMsg');
     el.textContent = msg;
     el.style.display = 'block';
   }
