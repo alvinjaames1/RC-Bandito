@@ -1,7 +1,12 @@
+"""
+RC Bandito - Database Models
+User, Role, and AuditLog
+"""
+
 from datetime import datetime
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
-from app import db, login_manager
+from extensions import db, login_manager
 
 
 class Role:
@@ -17,7 +22,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(20), nullable=False, default=Role.OPERATOR)
-    is_active = db.Column(db.Boolean, default=True)
+    active = db.Column(db.Boolean, default=True)
     failed_attempts = db.Column(db.Integer, default=0)
     locked_until = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -37,6 +42,9 @@ class User(UserMixin, db.Model):
     def is_admin(self):
         return self.role == Role.ADMIN
 
+    def __repr__(self):
+        return f"<User {self.username} ({self.role})>"
+
 
 class AuditLog(db.Model):
     __tablename__ = "audit_logs"
@@ -51,6 +59,9 @@ class AuditLog(db.Model):
     success = db.Column(db.Boolean, default=True)
 
     user = db.relationship("User", backref="audit_logs")
+
+    def __repr__(self):
+        return f"<AuditLog {self.event_type} by {self.username}>"
 
 
 @login_manager.user_loader
