@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>RC Bandito App</title>
+</head>
+<body>
+  <h1>RC Bandito Control App</h1>
+
+  <h2>Login Page</h2>
+  <input id="username" placeholder="Username">
+  <input id="password" type="password" placeholder="Password">
+  <button onclick="login()">Login</button>
+  <p id="loginMessage"></p>
+
+  <hr>
+
+  <h2>Start / Stop Car</h2>
+  <button onclick="startCar()">Start Car</button>
+  <button onclick="stopCar()">Stop Car</button>
+  <p id="carStatus">Car is stopped.</p>
+
+  <hr>
+
+  <h2>Speed Control</h2>
+  <button onclick="increaseSpeed()">Increase Speed</button>
+  <button onclick="decreaseSpeed()">Decrease Speed</button>
+  <p>Speed: <span id="speed">0</span></p>
+
+  <script>
+    function login() {
+      let user = document.getElementById("username").value;
+      let pass = document.getElementById("password").value;
+
+      if (user === "admin" && pass === "1234") {
+        document.getElementById("loginMessage").innerText = "Login successful!";
+      } else {
+        document.getElementById("loginMessage").innerText = "Invalid login.";
+      }
+    }
+
+    function startCar() {
+      document.getElementById("carStatus").innerText = "RC Bandito is running.";
+    }
+
+    function stopCar() {
+      document.getElementById("carStatus").innerText = "RC Bandito is stopped.";
+    }
+
+    let speed = 0;
+
+    function increaseSpeed() {
+      if (speed < 100) {
+        speed += 10;
+      }
+      document.getElementById("speed").innerText = speed;
+    }
+
+    function decreaseSpeed() {
+      if (speed > 0) {
+        speed -= 10;
+      }
+      document.getElementById("speed").innerText = speed;
+    }
+  </script>
+</body>
+</html>
