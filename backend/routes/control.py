@@ -1,7 +1,12 @@
+"""
+RC Bandito - Control Routes
+Command validation, rate limiting, and RC car movement dispatch
+"""
+
 from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from models.models import db, AuditLog
-from app import limiter
+from extensions import limiter
 import logging
 import time
 
@@ -46,16 +51,19 @@ def send_command():
         if not (0 <= speed <= 100):
             raise ValueError
     except (ValueError, TypeError):
-        return jsonify({"error": "Speed must be 0-100."}), 400
+        log_command(f"Rejected out-of-range speed '{speed}'", current_user, success=False)
+        return jsonify({"error": "Speed must be an integer between 0 and 100."}), 400
 
     last_command_time[current_user.id] = time.time()
-    log_command(f"Command '{command}' speed={speed}", current_user)
+    dispatch_to_car(command, speed)
+    log_command(f"Command '{command}' speed={speed} dispatched", current_user)
     return jsonify({"status": "ok", "command": command, "speed": speed}), 200
 
 
 @control_bp.route("/emergency_stop", methods=["POST"])
 @login_required
 def emergency_stop():
+    dispatch_to_car("stop", 0)
     log_command("EMERGENCY STOP triggered", current_user)
     return jsonify({"status": "stopped"}), 200
 
@@ -66,4 +74,16 @@ def watchdog_status():
     last = last_command_time.get(current_user.id, 0)
     elapsed = time.time() - last
     timed_out = elapsed > WATCHDOG_TIMEOUT
+
+    if timed_out and last > 0:
+        dispatch_to_car("stop", 0)
+
     return jsonify({"timed_out": timed_out, "elapsed_seconds": round(elapsed, 2)}), 200
+
+
+def dispatch_to_car(command: str, speed: int):
+    """
+    Placeholder: send the command to the RC car.
+    Replace with actual GPIO or socket call to the Raspberry Pi.
+    """
+    logger.info(f"[DISPATCH] command={command} speed={speed}")
