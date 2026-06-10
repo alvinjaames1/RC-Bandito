@@ -1,20 +1,11 @@
 """
 RC Bandito - Main Flask Application Entry Point
-(Updated: uses SQLite so no database setup is needed.
- To switch to MySQL later, change DATABASE_URL back to the mysql+pymysql:// string.)
 """
 
 from flask import Flask, redirect, url_for
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
+from extensions import db, login_manager, limiter
 import logging
 import os
-
-db = SQLAlchemy()
-login_manager = LoginManager()
-limiter = Limiter(key_func=get_remote_address)
 
 
 def create_app():
@@ -23,7 +14,7 @@ def create_app():
 
     app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-change-in-prod")
 
-    # SQLite - zero setup, creates rc_bandito.db automatically in the backend folder
+    # SQLite - zero setup, creates rc_bandito.db automatically
     app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
         "DATABASE_URL", "sqlite:///rc_bandito.db"
     )
@@ -44,6 +35,9 @@ def create_app():
         format="%(asctime)s [%(levelname)s] %(message)s",
     )
 
+    # Import models so the user_loader gets registered
+    from models import models  # noqa: F401
+
     from routes.auth import auth_bp
     from routes.control import control_bp
     from routes.admin import admin_bp
@@ -60,7 +54,6 @@ def create_app():
     except ImportError:
         logging.warning("OpenCV not installed - video streaming disabled for now.")
 
-    # Convenience: visiting http://localhost:5000/ goes straight to the login page
     @app.route("/")
     def index():
         return redirect(url_for("auth.login"))
