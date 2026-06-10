@@ -242,7 +242,7 @@
     <button class="btn" onclick="handleRegister()">Create Account</button>
 
     <div class="switch-link">
-      Already have an account? <a href="login.html">Log in →</a>
+      Already have an account? <a href="/auth/login">Log in →</a>
     </div>
   </div>
 </div>
@@ -312,7 +312,7 @@
 
       if (res.ok) {
         showSuccess('Account created! Redirecting to login...');
-        setTimeout(() => { window.location.href = 'login.html'; }, 1200);
+        setTimeout(() => { window.location.href = '/auth/login'; }, 1200);
       } else {
         showError(data.error || 'Registration failed.');
       }
