@@ -11,7 +11,7 @@ camera = None
 def get_camera():
     global camera
     if camera is None:
-        camera = cv2.VideoCapture(0)
+        camera = cv2.VideoCapture("http://192.168.1.65:8080/video")
     return camera
 
 
