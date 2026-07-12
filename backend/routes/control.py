@@ -2,10 +2,10 @@
 RC Bandito - Control Routes
 Command validation, rate limiting, and RC car movement dispatch.
 
-Motor integration: uses the Freenove 4WD Smart Car kit's Motor module
-(PCA9685 PWM driver over I2C) when running on the Raspberry Pi.
-On a laptop (no Freenove library), it falls back to log-only mode so
-the app still runs for development.
+Motor integration: Freenove 4WD Smart Car kit v2.0
+(class Ordinary_Car, method set_motor_model, PCA9685 over I2C).
+Falls back to log-only mode on machines without the hardware,
+so the app still runs on laptops for development.
 """
 
 from flask import Blueprint, request, jsonify, render_template
@@ -19,13 +19,13 @@ control_bp = Blueprint("control", __name__)
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------
-# Freenove motor hardware (only available on the Raspberry Pi)
+# Freenove v2.0 motor hardware (only available on the Raspberry Pi)
 # ---------------------------------------------------------------
 try:
-    from Motor import Motor          # Freenove Code/Server/Motor.py
-    PWM = Motor()
+    from motor import Ordinary_Car       # backend/motor.py (copied from Freenove Code/Server)
+    PWM = Ordinary_Car()
     HARDWARE_AVAILABLE = True
-    logger.info("[HARDWARE] Freenove motor driver initialized.")
+    logger.info("[HARDWARE] Freenove Ordinary_Car motor driver initialized.")
 except Exception as e:
     PWM = None
     HARDWARE_AVAILABLE = False
@@ -108,37 +108,33 @@ def watchdog_status():
 
 
 # ---------------------------------------------------------------
-# Motor dispatch
+# Motor dispatch (Freenove v2.0 API)
 # ---------------------------------------------------------------
 def speed_to_duty(speed: int) -> int:
-    """
-    Map the UI speed (0-100) to the Freenove PWM duty range (0-4096).
-    We cap at 4000 to stay safely inside the range.
-    """
+    """Map UI speed (0-100) to PWM duty (0-4000, inside the 4096 range)."""
     return int(speed * 40)
 
 
 def dispatch_to_car(command: str, speed: int):
     """
-    Send the validated command to the Freenove 4WD motors.
-    setMotorModel(left_front, left_rear, right_front, right_rear)
-    Positive duty = forward rotation, negative = reverse, 0 = stop.
+    Drive the Freenove 4WD motors.
+    set_motor_model(left_front, left_rear, right_front, right_rear)
+    Positive duty = forward, negative = reverse, 0 = stop.
     """
     duty = speed_to_duty(speed)
 
     motor_map = {
         "forward":  ( duty,  duty,  duty,  duty),
         "backward": (-duty, -duty, -duty, -duty),
-        "left":     (-duty, -duty,  duty,  duty),   # left wheels back, right forward
-        "right":    ( duty,  duty, -duty, -duty),   # right wheels back, left forward
+        "left":     (-duty, -duty,  duty,  duty),   # left wheels reverse, right forward
+        "right":    ( duty,  duty, -duty, -duty),
         "stop":     (0, 0, 0, 0),
     }
 
     duties = motor_map[command]
 
     if HARDWARE_AVAILABLE:
-        PWM.setMotorModel(*duties)
-        logger.info(f"[MOTOR] {command} -> setMotorModel{duties}")
+        PWM.set_motor_model(*duties)
+        logger.info(f"[MOTOR] {command} -> set_motor_model{duties}")
     else:
         logger.info(f"[DISPATCH-SIM] {command} speed={speed} (no hardware) -> {duties}")
-
