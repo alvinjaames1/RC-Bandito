@@ -1,0 +1,122 @@
+2026-06-11 11:25:25,155 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.70:5000
+2026-06-11 11:25:25,155 [INFO] [33mPress CTRL+C to quit[0m
+2026-06-11 11:25:25,156 [INFO]  * Restarting with stat
+2026-06-11 11:25:25,694 [WARNING]  * Debugger is active!
+2026-06-11 11:25:25,696 [INFO]  * Debugger PIN: 910-777-501
+2026-06-21 11:16:24,658 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.70:5000
+2026-06-21 11:16:24,659 [INFO] [33mPress CTRL+C to quit[0m
+2026-06-21 11:16:24,660 [INFO]  * Restarting with stat
+2026-06-21 11:16:25,271 [WARNING]  * Debugger is active!
+2026-06-21 11:16:25,272 [INFO]  * Debugger PIN: 136-959-852
+2026-06-21 11:17:00,353 [INFO] 192.168.1.65 - - [21/Jun/2026 11:17:00] "[32mGET / HTTP/1.1[0m" 302 -
+2026-06-21 11:17:00,440 [INFO] 192.168.1.65 - - [21/Jun/2026 11:17:00] "GET /auth/login HTTP/1.1" 200 -
+2026-06-21 11:17:00,704 [INFO] 192.168.1.65 - - [21/Jun/2026 11:17:00] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-06-21 11:17:06,493 [INFO] 192.168.1.65 - - [21/Jun/2026 11:17:06] "GET /auth/register HTTP/1.1" 200 -
+2026-06-21 11:17:20,749 [INFO] [REGISTER] New account created: 'kingkong' | Success: True
+2026-06-21 11:17:20,750 [INFO] 192.168.1.65 - - [21/Jun/2026 11:17:20] "[35m[1mPOST /auth/register HTTP/1.1[0m" 201 -
+2026-06-21 11:17:22,258 [INFO] 192.168.1.65 - - [21/Jun/2026 11:17:22] "GET /auth/login HTTP/1.1" 200 -
+2026-06-21 11:17:25,569 [INFO] [LOGIN_SUCCESS] User 'kingkong' logged in | Success: True
+2026-06-21 11:17:25,572 [INFO] 192.168.1.65 - - [21/Jun/2026 11:17:25] "POST /auth/login HTTP/1.1" 200 -
+2026-06-21 11:17:26,352 [INFO] 192.168.1.65 - - [21/Jun/2026 11:17:26] "GET /control/dashboard HTTP/1.1" 200 -
+2026-06-21 11:17:30,854 [INFO] 192.168.1.65 - - [21/Jun/2026 11:17:30] "GET /stream/video_feed HTTP/1.1" 200 -
+2026-06-21 11:19:24,843 [INFO] [LOGOUT] User 'kingkong' logged out | Success: True
+2026-06-21 11:19:24,844 [INFO] 192.168.1.65 - - [21/Jun/2026 11:19:24] "POST /auth/logout HTTP/1.1" 200 -
+2026-06-21 11:19:24,909 [INFO] 192.168.1.65 - - [21/Jun/2026 11:19:24] "GET /auth/login HTTP/1.1" 200 -
+2026-06-21 11:47:58,437 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.70:5000
+2026-06-21 11:47:58,438 [INFO] [33mPress CTRL+C to quit[0m
+2026-06-21 11:47:58,439 [INFO]  * Restarting with stat
+2026-06-21 11:47:58,937 [WARNING]  * Debugger is active!
+2026-06-21 11:47:58,939 [INFO]  * Debugger PIN: 136-959-852
+2026-06-21 11:49:55,012 [INFO] 192.168.1.70 - - [21/Jun/2026 11:49:55] "[32mGET / HTTP/1.1[0m" 302 -
+2026-06-21 11:49:55,030 [INFO] 192.168.1.70 - - [21/Jun/2026 11:49:55] "GET /auth/login HTTP/1.1" 200 -
+2026-06-21 11:49:55,340 [INFO] 192.168.1.70 - - [21/Jun/2026 11:49:55] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-06-21 11:50:02,859 [INFO] 192.168.1.70 - - [21/Jun/2026 11:50:02] "GET /auth/register HTTP/1.1" 200 -
+2026-06-21 11:50:16,245 [INFO] 192.168.1.70 - - [21/Jun/2026 11:50:16] "[31m[1mPOST /auth/register HTTP/1.1[0m" 409 -
+2026-06-21 11:50:24,809 [INFO] [REGISTER] New account created: 'kingkongg' | Success: True
+2026-06-21 11:50:24,809 [INFO] 192.168.1.70 - - [21/Jun/2026 11:50:24] "[35m[1mPOST /auth/register HTTP/1.1[0m" 201 -
+2026-06-21 11:50:26,101 [INFO] 192.168.1.70 - - [21/Jun/2026 11:50:26] "GET /auth/login HTTP/1.1" 200 -
+2026-06-21 11:50:42,210 [INFO] [LOGIN_SUCCESS] User 'kingkongg' logged in | Success: True
+2026-06-21 11:50:42,214 [INFO] 192.168.1.70 - - [21/Jun/2026 11:50:42] "POST /auth/login HTTP/1.1" 200 -
+2026-06-21 11:50:42,866 [INFO] 192.168.1.70 - - [21/Jun/2026 11:50:42] "GET /control/dashboard HTTP/1.1" 200 -
+2026-06-21 11:50:46,028 [INFO] 192.168.1.70 - - [21/Jun/2026 11:50:46] "GET /stream/video_feed HTTP/1.1" 200 -
+2026-06-21 11:50:58,694 [INFO] [LOGOUT] User 'kingkongg' logged out | Success: True
+2026-06-21 11:50:58,695 [INFO] 192.168.1.70 - - [21/Jun/2026 11:50:58] "POST /auth/logout HTTP/1.1" 200 -
+2026-06-21 11:50:58,713 [INFO] 192.168.1.70 - - [21/Jun/2026 11:50:58] "GET /auth/login HTTP/1.1" 200 -
+2026-06-21 11:53:37,372 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.70:5000
+2026-06-21 11:53:37,372 [INFO] [33mPress CTRL+C to quit[0m
+2026-06-21 11:53:37,373 [INFO]  * Restarting with stat
+2026-06-21 11:53:37,912 [WARNING]  * Debugger is active!
+2026-06-21 11:53:37,914 [INFO]  * Debugger PIN: 136-959-852
+2026-06-21 11:53:48,773 [INFO] 192.168.1.70 - - [21/Jun/2026 11:53:48] "GET /auth/login HTTP/1.1" 200 -
+2026-06-21 11:53:51,965 [INFO] [LOGIN_SUCCESS] User 'kingkongg' logged in | Success: True
+2026-06-21 11:53:51,966 [INFO] 192.168.1.70 - - [21/Jun/2026 11:53:51] "POST /auth/login HTTP/1.1" 200 -
+2026-06-21 11:53:52,600 [INFO] 192.168.1.70 - - [21/Jun/2026 11:53:52] "GET /control/dashboard HTTP/1.1" 200 -
+2026-06-21 11:53:52,697 [INFO] 192.168.1.70 - - [21/Jun/2026 11:53:52] "GET /stream/video_feed HTTP/1.1" 200 -
+2026-06-21 11:54:15,174 [INFO] 192.168.1.70 - - [21/Jun/2026 11:54:15] "GET /auth/login HTTP/1.1" 200 -
+2026-06-21 11:54:32,152 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.70:5000
+2026-06-21 11:54:32,152 [INFO] [33mPress CTRL+C to quit[0m
+2026-06-21 11:54:32,153 [INFO]  * Restarting with stat
+2026-06-21 11:54:32,678 [WARNING]  * Debugger is active!
+2026-06-21 11:54:32,680 [INFO]  * Debugger PIN: 136-959-852
+2026-06-21 11:54:36,464 [INFO] [LOGIN_SUCCESS] User 'kingkongg' logged in | Success: True
+2026-06-21 11:54:36,465 [INFO] 192.168.1.70 - - [21/Jun/2026 11:54:36] "POST /auth/login HTTP/1.1" 200 -
+2026-06-21 11:54:37,097 [INFO] 192.168.1.70 - - [21/Jun/2026 11:54:37] "GET /control/dashboard HTTP/1.1" 200 -
+2026-06-21 11:54:40,551 [INFO] 192.168.1.70 - - [21/Jun/2026 11:54:40] "GET /stream/video_feed HTTP/1.1" 200 -
+2026-06-24 13:21:28,433 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.70:5000
+2026-06-24 13:21:28,434 [INFO] [33mPress CTRL+C to quit[0m
+2026-06-24 13:21:28,446 [INFO]  * Restarting with watchdog (windowsapi)
+2026-06-24 13:21:28,967 [WARNING]  * Debugger is active!
+2026-06-24 13:21:28,969 [INFO]  * Debugger PIN: 136-959-852
+2026-06-24 13:21:37,258 [INFO] 127.0.0.1 - - [24/Jun/2026 13:21:37] "[32mGET / HTTP/1.1[0m" 302 -
+2026-06-24 13:21:37,294 [INFO] 127.0.0.1 - - [24/Jun/2026 13:21:37] "GET /auth/login HTTP/1.1" 200 -
+2026-06-24 13:21:37,395 [INFO] 127.0.0.1 - - [24/Jun/2026 13:21:37] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-06-24 13:21:40,396 [INFO] [LOGIN_FAIL] Unknown user 'king' | Success: False
+2026-06-24 13:21:40,397 [INFO] 127.0.0.1 - - [24/Jun/2026 13:21:40] "[31m[1mPOST /auth/login HTTP/1.1[0m" 401 -
+2026-06-24 13:21:48,136 [INFO] [LOGIN_FAIL] Unknown user 'king' | Success: False
+2026-06-24 13:21:48,137 [INFO] 127.0.0.1 - - [24/Jun/2026 13:21:48] "[31m[1mPOST /auth/login HTTP/1.1[0m" 401 -
+2026-06-24 13:22:28,403 [INFO] [LOGIN_SUCCESS] User 'kingkongg' logged in | Success: True
+2026-06-24 13:22:28,406 [INFO] 127.0.0.1 - - [24/Jun/2026 13:22:28] "POST /auth/login HTTP/1.1" 200 -
+2026-06-24 13:22:29,117 [INFO] 127.0.0.1 - - [24/Jun/2026 13:22:29] "GET /control/dashboard HTTP/1.1" 200 -
+2026-06-24 13:22:32,422 [INFO] 127.0.0.1 - - [24/Jun/2026 13:22:32] "GET /stream/video_feed HTTP/1.1" 200 -
+2026-06-24 13:22:44,481 [INFO] [DISPATCH] command=forward speed=50
+2026-06-24 13:22:44,486 [INFO] 127.0.0.1 - - [24/Jun/2026 13:22:44] "POST /control/command HTTP/1.1" 200 -
+2026-06-24 13:22:44,533 [INFO] [DISPATCH] command=stop speed=50
+2026-06-24 13:22:44,538 [INFO] 127.0.0.1 - - [24/Jun/2026 13:22:44] "POST /control/command HTTP/1.1" 200 -
+2026-06-24 13:22:46,072 [INFO] [DISPATCH] command=forward speed=50
+2026-06-24 13:22:46,080 [INFO] 127.0.0.1 - - [24/Jun/2026 13:22:46] "POST /control/command HTTP/1.1" 200 -
+2026-06-24 13:22:46,215 [INFO] [DISPATCH] command=stop speed=50
+2026-06-24 13:22:46,221 [INFO] 127.0.0.1 - - [24/Jun/2026 13:22:46] "POST /control/command HTTP/1.1" 200 -
+2026-06-24 13:22:47,540 [INFO] [DISPATCH] command=backward speed=50
+2026-06-24 13:22:47,548 [INFO] 127.0.0.1 - - [24/Jun/2026 13:22:47] "POST /control/command HTTP/1.1" 200 -
+2026-06-24 13:22:47,680 [INFO] [DISPATCH] command=stop speed=50
+2026-06-24 13:22:47,691 [INFO] 127.0.0.1 - - [24/Jun/2026 13:22:47] "POST /control/command HTTP/1.1" 200 -
+2026-06-24 13:22:49,718 [INFO] [DISPATCH] command=right speed=50
+2026-06-24 13:22:49,731 [INFO] 127.0.0.1 - - [24/Jun/2026 13:22:49] "POST /control/command HTTP/1.1" 200 -
+2026-06-24 13:22:49,905 [INFO] [DISPATCH] command=stop speed=50
+2026-06-24 13:22:49,914 [INFO] 127.0.0.1 - - [24/Jun/2026 13:22:49] "POST /control/command HTTP/1.1" 200 -
+2026-06-24 13:22:51,108 [INFO] [DISPATCH] command=left speed=50
+2026-06-24 13:22:51,117 [INFO] 127.0.0.1 - - [24/Jun/2026 13:22:51] "POST /control/command HTTP/1.1" 200 -
+2026-06-24 13:22:51,259 [INFO] [DISPATCH] command=stop speed=50
+2026-06-24 13:22:51,264 [INFO] 127.0.0.1 - - [24/Jun/2026 13:22:51] "POST /control/command HTTP/1.1" 200 -
+2026-06-24 13:22:52,648 [INFO] [DISPATCH] command=right speed=50
+2026-06-24 13:22:52,656 [INFO] 127.0.0.1 - - [24/Jun/2026 13:22:52] "POST /control/command HTTP/1.1" 200 -
+2026-06-24 13:22:52,797 [INFO] [DISPATCH] command=stop speed=50
+2026-06-24 13:22:52,807 [INFO] 127.0.0.1 - - [24/Jun/2026 13:22:52] "POST /control/command HTTP/1.1" 200 -
