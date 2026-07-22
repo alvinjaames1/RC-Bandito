@@ -92,6 +92,37 @@
 
   .field { margin-bottom: 1.25rem; }
 
+  /* Role selector */
+  .role-toggle {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .role-btn {
+    background: var(--dark);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.7rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+  }
+
+  .role-btn:hover { border-color: var(--muted); color: var(--text); }
+
+  .role-btn.selected {
+    border-color: var(--red);
+    color: var(--red);
+    background: rgba(230,57,70,0.08);
+  }
+
+  #adminCodeField { display: none; }
+
   label {
     display: block;
     font-size: 0.65rem;
@@ -114,19 +145,6 @@
   }
 
   input:focus { border-color: var(--red); }
-
-  select {
-    width: 100%;
-    background: var(--dark);
-    border: 1px solid var(--border);
-    color: var(--text);
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.85rem;
-    padding: 0.75rem 1rem;
-    outline: none;
-    cursor: pointer;
-  }
-  select:focus { border-color: var(--red); }
   input::placeholder { color: #333; }
 
   /* Password strength meter */
@@ -227,6 +245,19 @@
     <div class="msg success" id="successMsg"></div>
 
     <div class="field">
+      <label>Account Type</label>
+      <div class="role-toggle">
+        <button type="button" class="role-btn selected" id="roleOperator" onclick="selectRole('operator')">Operator</button>
+        <button type="button" class="role-btn" id="roleAdmin" onclick="selectRole('admin')">Admin</button>
+      </div>
+    </div>
+
+    <div class="field" id="adminCodeField">
+      <label for="adminCode">Admin Setup Code</label>
+      <input type="password" id="adminCode" placeholder="required for admin accounts" autocomplete="off" />
+    </div>
+
+    <div class="field">
       <label for="username">Username</label>
       <input type="text" id="username" placeholder="choose a username" autocomplete="username" />
     </div>
@@ -234,22 +265,6 @@
     <div class="field">
       <label for="email">Email</label>
       <input type="email" id="email" placeholder="you@example.com" autocomplete="email" />
-    </div>
-
-    <div class="field">
-      <label for="role">Account Type</label>
-      <select id="role" onchange="toggleAdminCode()">
-        <option value="operator">Operator — drive the car</option>
-        <option value="admin">Administrator — manage users &amp; logs</option>
-      </select>
-    </div>
-
-    <div class="field" id="adminCodeField" style="display:none;">
-      <label for="adminCode">Admin Code</label>
-      <input type="password" id="adminCode" placeholder="enter the admin code" autocomplete="off" />
-      <div class="requirements">
-        <span style="color:var(--yellow);">Admin accounts require the code set by the system owner.</span>
-      </div>
     </div>
 
     <div class="field">
@@ -277,6 +292,15 @@
 </div>
 
 <script>
+  let selectedRole = 'operator';
+
+  function selectRole(role) {
+    selectedRole = role;
+    document.getElementById('roleOperator').classList.toggle('selected', role === 'operator');
+    document.getElementById('roleAdmin').classList.toggle('selected', role === 'admin');
+    document.getElementById('adminCodeField').style.display = role === 'admin' ? 'block' : 'none';
+  }
+
   function checkStrength() {
     const pw = document.getElementById('password').value;
     const fill = document.getElementById('strengthFill');
@@ -294,11 +318,6 @@
     const colors = ['#e63946', '#e63946', '#e9c46a', '#2a9d2a'];
     fill.style.width = widths[score];
     fill.style.background = colors[score];
-  }
-
-  function toggleAdminCode() {
-    const role = document.getElementById('role').value;
-    document.getElementById('adminCodeField').style.display = role === 'admin' ? 'block' : 'none';
   }
 
   async function handleRegister() {
@@ -330,6 +349,11 @@
       return;
     }
 
+    if (selectedRole === 'admin' && !document.getElementById('adminCode').value) {
+      showError('Admin accounts require the admin setup code.');
+      return;
+    }
+
     if (password !== confirm) {
       showError('Passwords do not match.');
       return;
@@ -339,11 +363,7 @@
       const res = await fetch('/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          username, email, password,
-          role: document.getElementById('role').value,
-          admin_code: document.getElementById('adminCode').value
-        })
+        body: JSON.stringify({ username, email, password, role: selectedRole, admin_code: document.getElementById('adminCode').value })
       });
 
       const data = await res.json();
