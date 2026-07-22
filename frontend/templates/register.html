@@ -114,6 +114,19 @@
   }
 
   input:focus { border-color: var(--red); }
+
+  select {
+    width: 100%;
+    background: var(--dark);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85rem;
+    padding: 0.75rem 1rem;
+    outline: none;
+    cursor: pointer;
+  }
+  select:focus { border-color: var(--red); }
   input::placeholder { color: #333; }
 
   /* Password strength meter */
@@ -224,6 +237,22 @@
     </div>
 
     <div class="field">
+      <label for="role">Account Type</label>
+      <select id="role" onchange="toggleAdminCode()">
+        <option value="operator">Operator — drive the car</option>
+        <option value="admin">Administrator — manage users &amp; logs</option>
+      </select>
+    </div>
+
+    <div class="field" id="adminCodeField" style="display:none;">
+      <label for="adminCode">Admin Code</label>
+      <input type="password" id="adminCode" placeholder="enter the admin code" autocomplete="off" />
+      <div class="requirements">
+        <span style="color:var(--yellow);">Admin accounts require the code set by the system owner.</span>
+      </div>
+    </div>
+
+    <div class="field">
       <label for="password">Password</label>
       <input type="password" id="password" placeholder="••••••••" autocomplete="new-password" oninput="checkStrength()" />
       <div class="strength-meter"><div class="strength-fill" id="strengthFill"></div></div>
@@ -267,6 +296,11 @@
     fill.style.background = colors[score];
   }
 
+  function toggleAdminCode() {
+    const role = document.getElementById('role').value;
+    document.getElementById('adminCodeField').style.display = role === 'admin' ? 'block' : 'none';
+  }
+
   async function handleRegister() {
     const username = document.getElementById('username').value.trim();
     const email = document.getElementById('email').value.trim();
@@ -305,7 +339,11 @@
       const res = await fetch('/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email, password })
+        body: JSON.stringify({
+          username, email, password,
+          role: document.getElementById('role').value,
+          admin_code: document.getElementById('adminCode').value
+        })
       });
 
       const data = await res.json();
